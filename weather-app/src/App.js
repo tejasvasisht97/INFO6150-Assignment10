@@ -72,11 +72,10 @@ import axios from 'axios';
 const App = () => {
   const [forecastData, setForecastData] = useState([]);
 
-  useEffect(() => {
-    // Function to fetch 5-day forecast data from OpenWeatherMap API
+  useEffect(() => { 
     const fetchWeatherData = async () => {
-      const apiKey = 'f78f94134cf3ef0f3c262560317eb123'; // Replace with your API key
-      const city = 'BOSTON'; // Replace with the city you want to get the forecast for
+      const apiKey = 'f78f94134cf3ef0f3c262560317eb123'; 
+      const city = 'BOSTON'; 
       const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
 
       try {

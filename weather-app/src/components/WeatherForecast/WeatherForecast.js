@@ -15,6 +15,7 @@ const WeatherForecast = ({ forecastData }) => {
               High: {dayData.high}°C | Low: {dayData.low}°C
             </p>
             <img src={getWeatherIcon(dayData.condition)} alt={`${dayData.condition} icon`} />
+            <br></br>
             <Link to={`/${dayData.day.toLowerCase()}`}>Hourly Forecast</Link>
           </div>
         ))}
@@ -25,11 +26,11 @@ const WeatherForecast = ({ forecastData }) => {
 
 const getWeatherIcon = (condition) => {
   switch (condition) {
-    case 'sunny':
+    case 'clear':
       return 'sun.png';
-    case 'cloudy':
+    case 'clouds':
       return 'cloud.png';
-    case 'rainy':
+    case 'rain':
       return 'rainy.png';
     case 'snowy':
       return 'winter.png';

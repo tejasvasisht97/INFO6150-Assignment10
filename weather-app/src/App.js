@@ -1,65 +1,3 @@
-// // App.js
-// import React from 'react';
-// import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-// import Home from './components/Home/Home';
-// import WeatherForecast from './components/WeatherForecast/WeatherForecast';
-// import HourlyForecast from './components/HourlyForecast/HourlyForecast';
-
-// const App = () => {
-//   const forecastData = [
-//     { day: 'Monday', high: 28, low: 20, condition: 'sunny' },
-//     { day: 'Tuesday', high: 25, low: 18, condition: 'cloudy' },
-//     { day: 'Wednesday', high: 30, low: 22, condition: 'rainy' },
-//     { day: 'Thursday', high: 22, low: 15, condition: 'snowy' },
-//     { day: 'Friday', high: 26, low: 19, condition: 'sunny' },
-//   ];
-//   const getWeatherIcon = (condition) => {
-//     switch (condition) {
-//       case 'sunny':
-//         return 'sunny.png';
-//       case 'cloudy':
-//         return 'cloudy.png';
-//       case 'rainy':
-//         return 'rainy.png';
-//       case 'snowy':
-//         return 'snowy.png';
-//       default:
-//         return 'unknown.png';
-//     }
-//   };
-
-//   const getHourlyDataForDay = () => {
-//     return [
-//       { time: '12 AM', temperature: 22 },
-//       { time: '3 AM', temperature: 20 },
-//       { time: '6 AM', temperature: 18 },
-//       { time: '9 AM', temperature: 25 },
-//       { time: '12 PM', temperature: 28 },
-//       { time: '3 PM', temperature: 30 },
-//       { time: '6 PM', temperature: 28 },
-//       { time: '9 PM', temperature: 25 },
-//     ];
-//   };
-
-
-//   return (
-//     <Router>
-//       <div>
-//         <Routes>
-//           <Route
-//             path="/"
-//             element={<WeatherForecast forecastData={forecastData} />}
-//           />
-//           <Route
-//             path="/:day"
-//             element={<HourlyForecast hourlyData={getHourlyDataForDay()} />}
-//           />
-//         </Routes>
-//       </div>
-//     </Router>
-//   );
-// };
-// export default App;
 
 // App.js
 import React, { useEffect, useState } from 'react';
@@ -69,13 +7,15 @@ import WeatherForecast from './components/WeatherForecast/WeatherForecast';
 import HourlyForecast from './components/HourlyForecast/HourlyForecast';
 import axios from 'axios';
 
+// ... (import statements remain the same)
+
 const App = () => {
   const [forecastData, setForecastData] = useState([]);
 
-  useEffect(() => { 
+  useEffect(() => {
     const fetchWeatherData = async () => {
-      const apiKey = 'f78f94134cf3ef0f3c262560317eb123'; 
-      const city = 'BOSTON'; 
+      const apiKey = 'f78f94134cf3ef0f3c262560317eb123';
+      const city = 'BOSTON';
       const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
 
       try {
@@ -91,10 +31,15 @@ const App = () => {
   }, []);
 
   const extractDataFromApiResponse = (apiData) => {
-    return apiData.list.map((item) => ({
+    const filteredData = apiData.list.filter((item, index) => {
+      // Include only the first occurrence of each date (5 days)
+      return index % 8 === 0;
+    });
+
+    return filteredData.map((item) => ({
       day: new Date(item.dt * 1000).toLocaleDateString('en-US', { weekday: 'long' }),
-      high: Math.floor(item.main.temp_max/10),
-      low: Math.floor(item.main.temp_min/10),
+      high: Math.floor(item.main.temp_max / 10),
+      low: Math.floor(item.main.temp_min / 10),
       condition: item.weather[0].main.toLowerCase(),
     }));
   };

@@ -6,11 +6,15 @@ import Home from './components/Home/Home';
 import WeatherForecast from './components/WeatherForecast/WeatherForecast';
 import HourlyForecast from './components/HourlyForecast/HourlyForecast';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-// ... (import statements remain the same)
+
 
 const App = () => {
   const [forecastData, setForecastData] = useState([]);
+  const [hourlyData, setHourlyData] = useState([]);
+  const { day } = useParams();
+
 
   useEffect(() => {
     const fetchWeatherData = async () => {
@@ -22,6 +26,8 @@ const App = () => {
         const response = await axios.get(apiUrl);
         const extractedData = extractDataFromApiResponse(response.data);
         setForecastData(extractedData);
+        const hourly = extractHourlyDataFromApiResponse(response.data);
+        setHourlyData(hourly);
       } catch (error) {
         console.error('Error fetching weather data:', error);
       }
@@ -32,15 +38,21 @@ const App = () => {
 
   const extractDataFromApiResponse = (apiData) => {
     const filteredData = apiData.list.filter((item, index) => {
-      // Include only the first occurrence of each date (5 days)
       return index % 8 === 0;
     });
 
     return filteredData.map((item) => ({
       day: new Date(item.dt * 1000).toLocaleDateString('en-US', { weekday: 'long' }),
-      high: Math.floor(item.main.temp_max / 10),
-      low: Math.floor(item.main.temp_min / 10),
+      high: item.main.temp_max,
+      low: item.main.temp_min,
       condition: item.weather[0].main.toLowerCase(),
+    }));
+  };
+
+  const extractHourlyDataFromApiResponse = (apiData) => {
+    return apiData.list.map((item) => ({
+      time: new Date(item.dt * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' }),
+      temperature: Math.floor(item.main.temp / 10),
     }));
   };
 
@@ -49,7 +61,7 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/" element={<WeatherForecast forecastData={forecastData} />} />
-          <Route path="/:day" element={<HourlyForecast />} />
+          <Route path="/:day" element={<HourlyForecast forecastData={forecastData} hourlyData={hourlyData} />} />
         </Routes>
       </div>
     </Router>
